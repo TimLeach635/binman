@@ -19,6 +19,11 @@ When anything is ambiguous — requirements, behaviour, design — ask the user 
 
 Future nice-to-haves that are explicitly out of scope belong in the `Future Considerations` section of `SPEC.md`, not here.
 
+## Pitfalls
+
+**"Bin day" is the day before the collection, not the collection day itself.**
+Collections happen in the morning; bins go out the night before. A day is "bin day" if *tomorrow* has a collection. Both `morning` and `evening` modes check tomorrow's date — neither checks today's. The only difference between modes is the wording of the notification sent. It is easy to assume `morning` checks today and `evening` checks tomorrow; that is wrong.
+
 ## Git
 
 Always include a `Co-Authored-By` trailer in every commit message reflecting the model that made the change, e.g.:

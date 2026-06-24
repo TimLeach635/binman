@@ -6,10 +6,13 @@
 
 ## User-facing behaviour
 
-- On a collection day, `binman` sends **two** notifications:
-  - A **morning** notification: a heads-up that today is a bin day and which bins are collected
-  - An **evening** notification (target: 7pm): a prompt to actually take the bins out
-- On non-collection days, `binman` produces **no output and sends no notification**
+- Collections happen in the morning. Bins must be put out the **night before**.
+- A day is **"bin day"** if there is a collection scheduled for the **following calendar day**.
+- On bin day, `binman` sends **two** notifications:
+  - A **morning** notification (7am): a heads-up that today is bin day and which bins go out tonight
+  - An **evening** notification (7pm): a prompt to actually put the bins out
+- **Both** morning and evening modes check whether tomorrow has a collection. The only difference between them is the notification wording.
+- If tomorrow has no collection, `binman` produces **no output and sends no notification**, regardless of mode.
 - The collection schedule (which bins, which dates) is always retrieved from the data source — it is never inferred or hardcoded
 
 ## Invocation

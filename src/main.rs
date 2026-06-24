@@ -42,10 +42,10 @@ where
     S: CollectionSource,
     N: Notifier,
 {
-    let today = chrono::Local::now().date_naive();
+    let tomorrow = chrono::Local::now().date_naive() + chrono::Duration::days(1);
     let collections = source.fetch_upcoming()?;
 
-    let Some(collection) = collections.iter().find(|c| c.date == today) else {
+    let Some(collection) = collections.iter().find(|c| c.date == tomorrow) else {
         return Ok(());
     };
 
@@ -172,18 +172,24 @@ mod tests {
         assert!(notifier.calls().is_empty());
     }
 
-    #[test]
-    fn run_silent_when_collection_is_not_today() {
-        let yesterday = today() - chrono::Duration::days(1);
-        let source = MockSource(vec![collection_on(yesterday, vec![BinType::GeneralWaste])]);
-        let notifier = RecordingNotifier::new();
-        run(Mode::Morning, &source, &notifier).unwrap();
-        assert!(notifier.calls().is_empty());
+    fn tomorrow() -> NaiveDate {
+        today() + chrono::Duration::days(1)
     }
 
     #[test]
-    fn run_morning_sends_one_notification_with_bins() {
-        let source = MockSource(vec![collection_on(today(), vec![BinType::Recycling])]);
+    fn run_silent_when_no_collection_tomorrow() {
+        // collection is today, not tomorrow — both modes should be silent
+        let source = MockSource(vec![collection_on(today(), vec![BinType::GeneralWaste])]);
+        for mode in [Mode::Morning, Mode::Evening] {
+            let notifier = RecordingNotifier::new();
+            run(mode, &source, &notifier).unwrap();
+            assert!(notifier.calls().is_empty(), "{mode:?} should be silent");
+        }
+    }
+
+    #[test]
+    fn run_morning_sends_notification_when_collection_is_tomorrow() {
+        let source = MockSource(vec![collection_on(tomorrow(), vec![BinType::Recycling])]);
         let notifier = RecordingNotifier::new();
         run(Mode::Morning, &source, &notifier).unwrap();
         let calls = notifier.calls();
@@ -193,8 +199,8 @@ mod tests {
     }
 
     #[test]
-    fn run_evening_sends_one_notification_with_bins() {
-        let source = MockSource(vec![collection_on(today(), vec![BinType::GeneralWaste])]);
+    fn run_evening_sends_notification_when_collection_is_tomorrow() {
+        let source = MockSource(vec![collection_on(tomorrow(), vec![BinType::GeneralWaste])]);
         let notifier = RecordingNotifier::new();
         run(Mode::Evening, &source, &notifier).unwrap();
         let calls = notifier.calls();
@@ -206,7 +212,7 @@ mod tests {
     #[test]
     fn run_lists_multiple_bins() {
         let source = MockSource(vec![collection_on(
-            today(),
+            tomorrow(),
             vec![BinType::Recycling, BinType::GardenWaste],
         )]);
         let notifier = RecordingNotifier::new();
