@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `binman` is a Rust project (edition 2024) currently in early development. The name and purpose have not yet been defined beyond the initial `cargo new` scaffold.
 
+## Git
+
+Always include a `Co-Authored-By` trailer in every commit message reflecting the model that made the change, e.g.:
+
+```
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+```
+
 ## Commands
 
 ```bash
