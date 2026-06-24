@@ -63,6 +63,7 @@ Response: a JSON object containing a `collections` array. Each element has:
 | `DOMESTIC` | General waste (black bin) |
 | `RECYCLE` | Recycling (blue bin) |
 | `ORGANIC` | Garden waste (green bin) |
+| `FOOD` | Food waste (caddy) |
 
 The authority code `CCC` is hardcoded (Cambridge City Council). Supporting other authority codes is a non-goal for v1.
 

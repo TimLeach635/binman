@@ -75,6 +75,7 @@ fn parse_bin_type(s: &str) -> BinType {
         "DOMESTIC" => BinType::GeneralWaste,
         "RECYCLE" => BinType::Recycling,
         "ORGANIC" => BinType::GardenWaste,
+        "FOOD" => BinType::FoodWaste,
         other => BinType::Unknown(other.to_string()),
     }
 }
@@ -95,6 +96,7 @@ mod tests {
         assert_eq!(parse_bin_type("DOMESTIC"), BinType::GeneralWaste);
         assert_eq!(parse_bin_type("RECYCLE"), BinType::Recycling);
         assert_eq!(parse_bin_type("ORGANIC"), BinType::GardenWaste);
+        assert_eq!(parse_bin_type("FOOD"), BinType::FoodWaste);
     }
 
     #[test]

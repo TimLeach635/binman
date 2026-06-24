@@ -7,6 +7,7 @@ pub enum BinType {
     GeneralWaste,
     Recycling,
     GardenWaste,
+    FoodWaste,
     /// A round type returned by the API that is not recognised by this version of binman.
     Unknown(String),
 }
@@ -17,6 +18,7 @@ impl std::fmt::Display for BinType {
             BinType::GeneralWaste => "general waste",
             BinType::Recycling => "recycling",
             BinType::GardenWaste => "garden waste",
+            BinType::FoodWaste => "food waste",
             BinType::Unknown(s) => s.as_str(),
         })
     }
@@ -59,6 +61,11 @@ mod tests {
     #[test]
     fn bin_type_display_garden_waste() {
         assert_eq!(BinType::GardenWaste.to_string(), "garden waste");
+    }
+
+    #[test]
+    fn bin_type_display_food_waste() {
+        assert_eq!(BinType::FoodWaste.to_string(), "food waste");
     }
 
     #[test]
