@@ -32,23 +32,38 @@ The cron schedule that achieves the target behaviour:
 
 All configuration is via environment variables:
 
-| Variable | Description |
-|---|---|
-| `BINMAN_ADDRESS` | The address or postcode to look up on the council website. Exact format to be confirmed when the data source is investigated. |
-| `BINMAN_NTFY_TOPIC` | The ntfy topic name to publish notifications to (e.g. `my-bin-reminders`) |
-| `BINMAN_NTFY_URL` | Base URL of the ntfy server. Defaults to `https://ntfy.sh` if unset. |
+| Variable | Required | Description |
+|---|---|---|
+| `BINMAN_UPRN` | Yes | The UPRN (Unique Property Reference Number) of the property. Look yours up at findmyaddress.co.uk. |
+| `BINMAN_NTFY_TOPIC` | Yes | The ntfy topic name to publish notifications to (e.g. `my-bin-reminders`) |
+| `BINMAN_NTFY_URL` | No | Base URL of the ntfy server. Defaults to `https://ntfy.sh` if unset. |
 
 `binman` must exit with a non-zero status code and a clear error message if any required variable is missing.
 
 ## Data source
 
-The collection schedule is retrieved from the **Greater Cambridge Waste** service:
+The collection schedule is retrieved from an undocumented but stable public API operated by Greater Cambridge Shared Waste (powered by Bartec) and hosted on Azure API Management.
 
-> https://www.greatercambridgewaste.org/find-your-household-bin-collection-day
+**Collection schedule endpoint:**
+```
+GET https://servicelayer3c.azure-api.net/wastecalendar/collection/search/{UPRN}/?authority=CCC&numberOfCollections=255
+```
 
-Before implementing, investigate whether this service exposes a public API. If it does, prefer the API. If not, scrape the HTML response. The implementation must be isolated behind a trait so the data source can be swapped without changing the rest of the program.
+Response: a JSON object containing a `collections` array. Each element has:
+- `date` — ISO 8601 datetime (e.g. `2024-03-18T00:00:00Z`)
+- `roundTypes` — array of bin type strings
 
-The three bin types in use are: **general waste**, **recycling**, and **garden waste**. Collections alternate weekly: general waste one week, recycling and garden waste the next.
+**Bin type mapping:**
+
+| API value | Bin |
+|---|---|
+| `DOMESTIC` | General waste (black bin) |
+| `RECYCLE` | Recycling (blue bin) |
+| `ORGANIC` | Garden waste (green bin) |
+
+The authority code `CCC` is hardcoded (Cambridge City Council). Supporting other authority codes is a non-goal for v1.
+
+The data source implementation must be isolated behind a trait so it can be swapped without changing the rest of the program (e.g. to add caching in future).
 
 ## Notifications
 
@@ -68,8 +83,8 @@ On any failure, `binman` must:
 
 Failure cases include:
 - Missing required env vars
-- Network failure reaching the data source
-- Unexpected response from the data source (e.g. page format has changed, scraper needs updating)
+- Network failure reaching the data source API
+- Unexpected or malformed response from the data source API
 - Network failure reaching ntfy (in this case, only stderr output is possible)
 
 If `BINMAN_NTFY_TOPIC` is not set, the ntfy notification cannot be sent; stderr is the only output in that case.
