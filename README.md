@@ -197,7 +197,3 @@ GET https://servicelayer3c.azure-api.net/wastecalendar/collection/search/{UPRN}/
 
 Dates from the API are returned in UTC and converted to your local date, so collections aren't
 accidentally shifted by a day during British Summer Time.
-
-## Licence
-
-See the repository for licensing information.
