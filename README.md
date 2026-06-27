@@ -10,7 +10,7 @@ on every day that isn't a bin day.
 ## Why this exists
 
 Bin collections happen in the morning, so the bins have to go out **the night before**. It's easy
-to forget which week is recycling, which is garden waste, and whether this is the week you got the
+to forget which week is recycling, which is garden waste, and whether this is the week you put the
 food caddy out too. `binman` takes the council's own schedule, works out whether tomorrow is a
 collection day, and nudges you on your phone — twice:
 
